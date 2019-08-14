@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: S3 Example
+
+Resources: 
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+
+Outputs:
+  S3BucketName:
+    Value: !Ref s3Bucket
+  S3BucketArn:
+    Value: !GetAtt s3Bucket.Arn

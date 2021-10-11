@@ -20,6 +20,9 @@ learn [aws cloudformation](https://aws.amazon.com/cloudformation/)
   * service-managed (use with Orgs) - deploy stack instances to accounts managed by AWS Organizations in specific Regions. With this model, you don't need to create the necessary IAM roles; StackSets creates the IAM roles on your behalf.
 * automatic deployment enabled, StackSets automatically deploys to accounts that are added to the target organization or organizational units (OUs) in the future
 * account gate is an optional feature that lets you specify an AWS Lambda function to verify that a target account meets certain requirements before AWS CloudFormation StackSets begins stack operations in that account
+
+* stackset stacks should be account and region agnostic.  same template will be used for all deployments.  use SSM parameter store parameters in the target account + region for specific configurations.
+
 ---
 ## Running Examples
 

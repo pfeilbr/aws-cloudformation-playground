@@ -11,6 +11,8 @@ learn [aws cloudformation](https://aws.amazon.com/cloudformation/)
 * Drift detection
   * [Resources that support import and drift detection operations - AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html)
 
+### [Nested Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html)
+
 ### [Stack Sets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html)
 
 > enabling you to create, update, or delete stacks across multiple accounts and Regions with a single operation

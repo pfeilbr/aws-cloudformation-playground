@@ -69,3 +69,24 @@ aws cloudformation delete-stack --stack-name dynamic-references-ssm-secrets-stac
 
 * [CloudFormation Custom Resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html)
 * [CloudFormation Macros](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-macros.html)
+
+---
+
+## Scratch
+
+```sh
+aws cloudformation deploy --template-file templates/playground.yaml --stack-name playground-stack --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" "CAPABILITY_AUTO_EXPAND"                                     
+
+aws cloudformation describe-stacks \
+  --stack-name "playground-stack" \
+  --query "Stacks[0].Outputs[?OutputKey=='LambdaName'].OutputValue" --output text
+
+playground-stack-MyLambdaFunction-iMVMRs2CA3fm
+
+aws lambda invoke \
+  --cli-binary-format "raw-in-base64-out" \
+  --function-name "playground-stack-MyLambdaFunction-iMVMRs2CA3fm" \
+  --payload '{"msg": "hello"}' \
+  output.log; cat output.log; rm output.log
+
+```

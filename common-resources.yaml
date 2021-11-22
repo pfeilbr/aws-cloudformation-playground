@@ -142,6 +142,29 @@ Resources:
                 AWS: 
                   - "111122223333"        
 
+    DeadLetter:
+      Type: AWS::SQS::Queue
+
+    RawQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        DelaySeconds: 0
+        # FifoQueue: true
+        # QueueName: myname.fifo
+        # ContentBasedDeduplication: true
+        # KmsDataKeyReusePeriodSeconds: 5
+        # KmsMasterKeyId: /aws/kms/sqs
+        # MaximumMessageSize: 262,144
+        # MessageRetentionPeriod: 1209600
+        # ReceiveMessageWaitTimeSeconds: 10
+        RedrivePolicy:
+          deadLetterTargetArn : !GetAtt DeadLetter.Arn
+          maxReceiveCount : 4
+        Tags: 
+          - Key: Series
+            Value: SWS
+        VisibilityTimeout: 120
+
     FreeStorageSpaceAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:

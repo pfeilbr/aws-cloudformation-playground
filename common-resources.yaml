@@ -141,5 +141,27 @@ Resources:
               Principal:  
                 AWS: 
                   - "111122223333"        
-          
+
+    FreeStorageSpaceAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmDescription: Minimum FreeStorageSpace alert
+        AlarmActions:
+        - Ref: ESSNSTopic
+        MetricName: FreeStorageSpace
+        Namespace: AWS/ES
+        Statistic: Minimum
+        Period: '60'
+        EvaluationPeriods: '1'
+        Threshold: '20480'
+        ComparisonOperator: LessThanOrEqualToThreshold
+        Dimensions:
+        - Name: DomainName
+          Value:
+            Ref: ESDomainName
+        - Name: ClientId
+          Value:
+            Ref: "AWS::AccountId"
+
+
 Outputs:

@@ -85,6 +85,74 @@ Resources:
               detail-type:
                 - "translate"
 
+    SourceToDestinationEventBusRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - events.amazonaws.com
+              Action:
+                - "sts:AssumeRole"
+        Path: /
+        Policies:
+          - PolicyName: PutEventsOnDestinationEventBus
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action: "events:PutEvents"
+                  Resource:
+                    - !Ref SecurityEventBusArn
+
+    SecurityServiceRuleCreationStatement:
+      Type: AWS::Events::EventBusPolicy
+      Properties:
+        StatementId: "AllowCrossRegionRulesForSecurityTeam"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            AWS: !Sub "arn:aws:iam::${SecurityAccountNo}:root"
+          Action:
+            - "events:PutRule"
+            - "events:DeleteRule"
+            - "events:DescribeRule"
+            - "events:DisableRule"
+            - "events:EnableRule"
+            - "events:PutTargets"
+            - "events:RemoveTargets"
+          Resource:
+            - !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/*"  # default bus
+          Condition:
+            StringEqualsIfExists:
+              "events:creatorAccount": "${aws:PrincipalAccount}"
+
+    SecurityServiceRuleCreationStatement:
+      Type: AWS::Events::EventBusPolicy
+      Properties:
+        EventBusName: !Ref CustomEventBus # If you omit this, the default event bus is used.
+        StatementId: "AllowCrossRegionRulesForSecurityTeam"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            AWS: !Sub "arn:aws:iam::${SecurityAccountNo}:root"
+          Action:
+            - "events:PutRule"
+            - "events:DeleteRule"
+            - "events:DescribeRule"
+            - "events:DisableRule"
+            - "events:EnableRule"
+            - "events:PutTargets"
+            - "events:RemoveTargets"
+          Resource:
+            -  !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/${CustomEventBus.Name}/*'
+          Condition:
+            StringEqualsIfExists:
+              "events:creatorAccount": "${aws:PrincipalAccount}"
+
   MySNSTopic:
     Type: AWS::SNS::Topic
     Properties:

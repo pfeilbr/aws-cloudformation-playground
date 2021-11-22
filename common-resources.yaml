@@ -60,4 +60,86 @@ Resources:
                   - "lambda:InvokeFunction"
                 Resource: "*"
 
+  MyEventBridgeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: translate.lambdaHandler
+      Policies:
+        - ComprehendBasicAccessPolicy: {}
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'translate:TranslateText'
+              Resource: '*'
+      Events:
+        TranslateFilter:
+          Type: EventBridgeRule
+          Properties:
+            # Input: String '{"Key": "Value"}' Data that is sent to target, if used, event is not sent
+            # InputPath: String path to part of event desired
+            EventBusName: !Ref CustomBus
+            Pattern:
+              source:
+                - "TextEndpoint"
+              detail-type:
+                - "translate"
+
+  MySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint:
+            Fn::GetAtt:
+              - "MyQueue1"
+              - "Arn"
+          Protocol: "sqs"
+        - Endpoint:
+            Fn::GetAtt:
+              - "MyQueue2"
+              - "Arn"
+          Protocol: "sqs"
+      TopicName: "SampleTopic"
+
+  DetectionSNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Id: ID-GD-Topic-Policy
+        Version: '2012-10-17'
+        Statement:
+        - Sid: SID-Detection-Workshop
+          Effect: Allow
+          Principal:
+            Service: 
+              - events.amazonaws.com
+              - inspector.amazonaws.com
+          Action: sns:Publish
+          Resource: !Ref DetectionSNSTopic
+      Topics: 
+      - !Ref DetectionSNSTopic
+
+    MyQueue: 
+      Type: AWS::SQS::Queue
+      Properties: 
+        QueueName: "SampleQueue"
+ 
+    SampleSQSPolicy: 
+      Type: AWS::SQS::QueuePolicy
+      Properties: 
+        Queues: 
+          - "https://sqs:us-east-2.amazonaws.com/444455556666/queue2"
+          - !Ref MyQueue
+        PolicyDocument: 
+          Statement: 
+            - 
+              Action: 
+                - "SQS:SendMessage" 
+                - "SQS:ReceiveMessage"
+              Effect: "Allow"
+              Resource: "arn:aws:sqs:us-east-2:444455556666:queue2"
+              Principal:  
+                AWS: 
+                  - "111122223333"        
+          
 Outputs:
